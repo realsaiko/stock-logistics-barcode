@@ -77,7 +77,6 @@ class WebStock(http.Controller):
     def get_picking(self, picking_id, **kwargs):
         tpl_vals = self.__get_tpl_defaults(**kwargs)
         picking_id = request.env['stock.picking'].browse(picking_id)
-        nomenclature = picking_id.picking_type_id.barcode_nomenclature_id
         if not picking_id:
             return self.get_pickings(
                 errors=['No picking was found']
@@ -86,6 +85,7 @@ class WebStock(http.Controller):
             'picking': picking_id,
             'warehouse': picking_id.picking_type_id.warehouse_id,
         })
+        nomenclature = picking_id.picking_type_id.barcode_nomenclature_id.id
         if nomenclature:
             tpl_vals['barcode_nomenclature'] = nomenclature
         _logger.info(tpl_vals)
@@ -114,16 +114,17 @@ class WebStock(http.Controller):
         res = self._update_picking(picking_id, **kwargs)
         _logger.debug('Picking update response %s', res)
         if len(res.get('error_fields', [])):
-            return json.dumps(res)
+            return json.dumps({'error_fields' : res.get('error_fields')})
 
         if additional_action:
             self.action_additional(picking_id, additional_action)
 
-        _logger.debug(
-            'Action response for %s is %s',
-            kwargs['submit_action'],
-            getattr(self, kwargs['submit_action'])(picking_id)
-        )
+        if kwargs['submit_action']:
+            _logger.debug(
+                'Action response for %s is %s',
+                kwargs['submit_action'],
+                getattr(self, kwargs['submit_action'])(picking_id)
+            )
 
         return json.dumps(res)
 
@@ -133,6 +134,7 @@ class WebStock(http.Controller):
         auth='user',
         methods=['GET'],
     )
+    # never used?
     def get_picking_item(self, picking_id, **kwargs):
         picking_id = self.__get_picking(picking_id)
 
@@ -141,6 +143,7 @@ class WebStock(http.Controller):
         _logger.debug(kwargs)
 
         tpl_vals = self.__get_tpl_defaults(**kwargs)
+        _logger.debug(tpl_vals)
         picking_id = self.__get_picking(picking_id)
 
         if not picking_id:
@@ -158,7 +161,7 @@ class WebStock(http.Controller):
                 tpl_vals['error_fields'].append(
                     'Error while saving %s.' %  picking_id
                 )
-
+        _logger.debug(tpl_vals)
         return tpl_vals
 
     def action_additional(self, picking_id, additional_action):
@@ -216,11 +219,13 @@ class WebStock(http.Controller):
             return picking_id
 
     def __get_tpl_defaults(self, **kwargs):
+        nomenclature = request.env.ref('barcodes.default_barcode_nomenclature')
         return {
             'errors': [],
             'error_fields': kwargs.get('error_fields', []),
             'db_info': json.dumps(db_info()),
-            'barcode_nomenclature': request.env.ref(
-                'barcodes.default_barcode_nomenclature',
+            'barcode_nomenclature': int(request.env.ref(
+                    'barcodes.default_barcode_nomenclature'
+                )
             )
         }

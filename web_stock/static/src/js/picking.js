@@ -6,6 +6,8 @@ odoo.define('web_stock.picking', function(require) {
     
     var Dialog = require('web.Dialog');
     var snippet_animation = require('web_editor.snippets.animation');
+
+    var Widget = require('web.Widget');
     
     var mixins = require('web_stock.mixins');
     
@@ -172,6 +174,39 @@ odoo.define('web_stock.picking', function(require) {
             });
         },
         
+    });
+
+    // Add to Lot button
+    var AddLotButton = Widget.extend({
+        events: {
+            'click' : 'onClick',
+        },
+        onClick: function(ev){
+            ev.preventDefault();
+            var self = this;
+            //var prod_id = this.$el.attr("data-product-id");
+            //var barcode = this.$el.attr("data-barcode");
+            //var line_name = this.$el.attr("line-name");
+            var op_id = this.$el.attr("op-id");
+            var new_line = $('#lot_row').clone();
+            var lots_nr = parseInt($('input[name="lots_number"]').val()) + 1;
+            //$(new_line).attr("data-product-id", prod_id);
+            //$(new_line).attr("data-barcode", barcode);
+            //$(new_line).attr("name", line_name);
+            $(new_line).removeAttr("id");
+            $(new_line).attr("class", 'collapse in pack_lot_'+op_id);
+            $(new_line).attr("invisible", '0');
+            $(new_line).find('input').each(function(){
+                $(this).attr("name", $(this).attr("name") + lots_nr);
+            });
+            $('input[name="lots_number"]').val(lots_nr)
+            $("#new_lot_"+op_id).before(new_line);
+        },
+    });
+
+    $('a.js_add_lot_line').each(function( index ) {
+        var button = new AddLotButton();
+        button.setElement($(this)).start();
     });
     
     return {

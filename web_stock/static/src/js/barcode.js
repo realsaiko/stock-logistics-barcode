@@ -51,7 +51,7 @@ odoo.define('web_stock.barcode', function(require) {
         onParserLoad: function() {
             this.loaded = true;
             console.log('Barcode parser initialized');
-        }
+        },
 
         on_barcode_scanned: function(barcode) {
             console.log(barcode);

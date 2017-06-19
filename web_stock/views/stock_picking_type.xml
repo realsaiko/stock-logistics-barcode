@@ -7,15 +7,17 @@
 -->
 
 <odoo>
-    <template id="stock_picking_type_kanban"
-              inherit_id="stock.stock_picking_type_kanban"
-              name="Add Barcode Interface">
+    <record id="stock_picking_type_kanban_web_stock" model="ir.ui.view">
+        <field name="name">stock.picking.type.kanban.barcode.interface</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.stock_picking_type_kanban"/>
+        <field name="arch" type="xml">
         <xpath expr="//button[@name='get_action_picking_tree_ready']" position="after">
             <a t-attf-href="/web/stock/pickings?picking_type_id={{ record.id.raw_value }}"
-                class="btn btn-primary"
-                >
-                @TODO: Figure out why this button doesn't show up.
+                class="mt4">
+                <span>Use barcode</span>
              </a>
         </xpath>
-    </template>
+        </field>
+    </record>
 </odoo>

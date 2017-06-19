@@ -65,7 +65,7 @@
 				<main barcode_events="true" class="js_picking_form_barcode">
 					<input class="hidden"
 						   id="barcodeNomenclatureId"
-						   t-att-value="barcode_nomenclature.id" />
+						   t-att-value="barcode_nomenclature" />
 					<t t-raw="0"/>
 				</main>
 			</div>
