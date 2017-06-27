@@ -55,9 +55,13 @@ class WebsiteStockPickingWizard(models.TransientModel):
         ]
         if self.search_query:
             domain.extend([
-                '|',
-                ('origin', '=', self.search_query),
-                ('name', '=', self.search_query),
+                domain.extend([
+                '|','|','|','|',
+                ('origin', 'ilike', self.search_query),
+                ('name', 'ilike', self.search_query),
+                ('backorder_id.name', 'ilike', self.search_query),
+                ('move_lines.name', 'ilike', self.search_query),
+                ('move_lines.product_id.barcode', 'ilike', self.search_query),
             ])
         if self.picking_type_id:
             domain.append(('picking_type_id', '=', self.picking_type_id.id))

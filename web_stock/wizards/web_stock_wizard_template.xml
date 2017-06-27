@@ -49,7 +49,7 @@
 					</label>
 					<select name="picking_state" class="form-control js_picking_submit_immediate">
 						<option value="">All</option>
-						<t t-foreach="[('assigned', 'Available'), ('partially_available', 'Partially Available'), ('confirmed', 'Waiting Availability')]"
+						<t t-foreach="[('assigned', 'Available'), ('partially_available', 'Partially Available'), ('confirmed', 'Waiting Availability', ('draft', 'Draft'))]"
 						   t-as="picking_state">
 							<option t-att-value="picking_state[0]"
 									t-att-selected="wizard and picking_state[0] == wizard.picking_state">
