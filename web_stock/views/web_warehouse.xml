@@ -38,6 +38,8 @@
                         src="/web_stock/static/src/js/search.js"
 						/>
 
+                <link rel="stylesheet" href="/web_stock/static/src/css/web_stock.css"/>
+
 				&lt;!--[if lte IE 9]&gt; <link rel="stylesheet" href="/web/static/src/css/ie.css"/> &lt;![endif]--&gt;
 				<script type="text/javascript">
 					$(function() {
@@ -61,7 +63,7 @@
 			<a href="/web/" class="btn" style="position: absolute; top: 10px; left:10px;">
 				<i class="fa fa-home" />
 			</a>
-			<div id="wrapwrap">
+			<div id="wrapwrap" style="overflow-y: visible;">
 				<main barcode_events="true" class="js_picking_form_barcode">
 					<input class="hidden"
 						   id="barcodeNomenclatureId"

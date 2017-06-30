@@ -73,6 +73,7 @@ Contributors
 ------------
 
 * Dave Lasley <dave@laslabs.com>
+* Saulius Žilys <saul@saulenia.eu>
 
 Maintainer
 ----------

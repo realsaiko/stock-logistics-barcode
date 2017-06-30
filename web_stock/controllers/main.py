@@ -134,9 +134,24 @@ class WebStock(http.Controller):
         auth='user',
         methods=['GET'],
     )
-    # never used?
     def get_picking_item(self, picking_id, **kwargs):
         picking_id = self.__get_picking(picking_id)
+        barcode = kwargs.get('barcode', '')
+        description = ''
+        if picking_id and barcode:
+            pickings = picking_id.search([
+                ('state', 'not in', ['draft', 'cancel', 'done']),
+                ('id', '!=', picking_id.id),
+                ('partner_id.id', '=', picking_id.partner_id.id),
+                ('move_lines.product_id.barcode', '=', barcode)
+            ])
+            if pickings:
+                text = "<div class='list-group'>"
+                for pick in pickings:
+                    text += "<a href='/web/stock/pickings/%s' target='_blank' class='list-group-item'>%s</a>" % (
+                        pick.id, pick.name)
+                description = text + "</div>"
+        return json.dumps(description)
 
     def _update_picking(self, picking_id, **kwargs):
 
@@ -219,7 +234,6 @@ class WebStock(http.Controller):
             return picking_id
 
     def __get_tpl_defaults(self, **kwargs):
-        nomenclature = request.env.ref('barcodes.default_barcode_nomenclature')
         return {
             'errors': [],
             'error_fields': kwargs.get('error_fields', []),

@@ -197,7 +197,7 @@ odoo.define('web_stock.picking', function(require) {
             $(new_line).attr("class", 'collapse in pack_lot_'+op_id);
             $(new_line).attr("invisible", '0');
             $(new_line).find('input').each(function(){
-                $(this).attr("name", $(this).attr("name") + lots_nr);
+                $(this).attr("name", op_id + '.pack_lots_ids.' +$(this).attr("name") + '.' + lots_nr);
             });
             $('input[name="lots_number"]').val(lots_nr)
             $("#new_lot_"+op_id).before(new_line);

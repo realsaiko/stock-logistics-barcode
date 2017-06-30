@@ -5,7 +5,7 @@
 {
     "name": "Web Stock Picking",
     "summary": "Add web/barcode workflows for stock picking.",
-    "version": "9.0.2.0.0",
+    "version": "9.0.3.0.0",
     "category": "Warehouse",
     "website": "https://laslabs.com/",
     "author": "Saulius Zilys, LasLabs, Odoo Community Association (OCA)",

@@ -9,6 +9,7 @@ odoo.define('web_stock.barcode', function(require) {
     var BarcodeHandlerMixin = require('barcodes.BarcodeHandlerMixin');
     var BarcodeParser = require('barcodes.BarcodeParser');
     var Model = require('web.DataModel');
+    var Dialog = require('web.Dialog');
     
     var core = require('web.core');
     var _t = core._t;
@@ -56,9 +57,13 @@ odoo.define('web_stock.barcode', function(require) {
         on_barcode_scanned: function(barcode) {
             console.log(barcode);
             var self = this;
+            $('tr.success').each(function() {
+                $(this).attr('class', '');
+            });
             // Call hook method possibly implemented by subclass
             this.preOnchangeHook(barcode).then(function(proceed) {
-                if (proceed === true) {
+                //if (proceed === true) {
+                if (barcode) {
                     var parsedBarcode = self.barcodeParser.parse_barcode(barcode);
                     self.barcodeHistory.unshift(parsedBarcode);
                     try{
@@ -85,8 +90,19 @@ odoo.define('web_stock.barcode', function(require) {
             var productCode = this._stripBarcodePrefix(parsedBarcode);
             var $productEls = $('.js-picking-picked-qty[data-barcode="' + productCode.code + '"]');
             if ($productEls.length === 0) {
-                alert(_t('No product on page matching barcode ') +
-                      ' "' + parsedBarcode.code + '"');
+                $.ajax({
+                    method: 'GET',
+                    url: $('form.js_picking_form').attr('action') + '/items',
+                    data: {
+                       'barcode': parsedBarcode.code
+                    },
+                    dataType: 'json',
+                }).done(function(data) {
+                    $('#pickingModal div.modal-body').html('<p>' + data + '</p>');
+                    $('#pickingModal').modal('show');
+                });
+                //alert(_t('No product on page matching barcode ') +
+                //      ' "' + parsedBarcode.code + '"');
                 return;
             }
             this._handleBarcodeQty(barcodeQty, $productEls);
@@ -140,6 +156,8 @@ odoo.define('web_stock.barcode', function(require) {
                     }
                     $el.val(newVal);
                 }
+                $el.closest('tr').attr('class', 'success');
+                //$el.focus();
             });
         },
         

@@ -16,6 +16,7 @@ class WebsiteStockPickingWizard(models.TransientModel):
     _description = 'Website Stock Picking Wizard'
 
     search_query = fields.Char()
+    #search_domains = fields.Char(default=_default_domains)
     # picking_type = fields.Selection([
     #     ('incoming', 'Incoming'),
     #     ('outgoing', 'Outgoing'),
@@ -47,6 +48,18 @@ class WebsiteStockPickingWizard(models.TransientModel):
         comodel_name='stock.picking',
     )
 
+    def _search_domains(self, search_by):
+        domains = [
+            '|','|','|','|','|',
+            ('origin', 'ilike', search_by),
+            ('name', 'ilike', search_by),
+            ('backorder_id.name', 'ilike', search_by),
+            ('move_lines.name', 'ilike', search_by),
+            ('move_lines.product_id.barcode', 'ilike', search_by),
+            ('partner_id.name', 'ilike', search_by),
+        ]
+        return domains
+
     @api.multi
     def _get_domain(self):
         self.ensure_one()
@@ -54,15 +67,7 @@ class WebsiteStockPickingWizard(models.TransientModel):
             ('company_id', '=', self.company_id.id),
         ]
         if self.search_query:
-            domain.extend([
-                domain.extend([
-                '|','|','|','|',
-                ('origin', 'ilike', self.search_query),
-                ('name', 'ilike', self.search_query),
-                ('backorder_id.name', 'ilike', self.search_query),
-                ('move_lines.name', 'ilike', self.search_query),
-                ('move_lines.product_id.barcode', 'ilike', self.search_query),
-            ])
+            domain.extend(self._search_domains(self.search_query))
         if self.picking_type_id:
             domain.append(('picking_type_id', '=', self.picking_type_id.id))
         # elif self.picking_type:  # Don't search for a picking type and code
@@ -104,21 +109,47 @@ class WebsiteStockPickingWizard(models.TransientModel):
 
     @api.model
     def action_process_form(self, picking_id, form_values):
+        lot_key = '%s.pack_lots_ids.lot_name' % picking_id.id
+        #if lot_key in form_values.keys():
+        #    print('yra lots')
+        #else:
+        #    print('nera lots')
         vals = self._process_form_vals(form_values)
-        _logger.debug(vals)
         picking_id.write(
             vals
         )
 
     @api.model
+    def _process_lots(self, form_values):
+        for k, v in form_values.iteritems:
+            _logger.debug('lot_key: %s , lot_value: %s', k, v)
+        return False
+
+    @api.model
     def _process_form_vals(self, form_values):
         field_map = defaultdict(dict)
+        lot_map = defaultdict(dict)
         for name, value in form_values.iteritems():
             try:
                 op_id, field = name.split('.', 1)
+                _logger.debug('op_id: %s , field: %s', op_id, field)
             except ValueError:
                 continue
-            field_map[op_id][field] = value
+            if 'pack_lots_ids' in field:
+                try:
+                    pack_lots, field2, lot_id = field.split('.', 2)
+                except ValueError:
+                    continue
+                #lot[lot_id][field2] = value
+                lot_map[op_id+'.'+lot_id][field2] = value
+            else:
+                field_map[op_id][field] = value
+            #if pack_lots == 'pack_lots_ids':
+            #    lot_map[lot_id][field2] = value
+            #    lot_maps[op_id] = lot_map
+        if lot_map:
+            lot_ids = self._process_lots(lot_map)
+
         return {
             'pack_operation_product_ids': [
                 (1, int(k), v) for k, v in field_map.iteritems()
