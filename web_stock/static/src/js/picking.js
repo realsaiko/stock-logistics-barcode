@@ -114,6 +114,10 @@ odoo.define('web_stock.picking', function(require) {
                     text: _t('Proceed'),
                     classes: 'btn btn-primary js_picking_btn_additional',
                     close: true,
+                    click: function() {
+                        $('.js_picking_additional_action').val('overpick_transfer');
+                        $('.js-picking-validate').trigger('click');
+                    }
                 },
                 {
                     text: _t('Cancel'),

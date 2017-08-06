@@ -266,12 +266,12 @@
 												<td>
 													<span t-field="pack_op.product_qty" />
 													/
-													<t t-if="pack_op.lots_visible or pack_op.qty_done == pack_op.product_qty">
+													<t t-if="pack_op.lots_visible or pack_op.qty_done >= pack_op.product_qty">
 														<span t-field="pack_op.qty_done"
 															  class="js_picking_pack_op_done"
 															  />
 													</t>
-													<t t-if="pack_op.qty_done != pack_op.product_qty">
+													<t t-if="pack_op.qty_done &lt; pack_op.product_qty">
 														<input type="text"
 															   class="js-picking-picked-qty"
 															   t-att-data-product-qty="pack_op.product_qty"

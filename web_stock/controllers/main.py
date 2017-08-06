@@ -58,6 +58,8 @@ class WebStock(http.Controller):
         else:
             if not wizard_id:
                 wizard_id = wizard_obj.create({})
+            else:
+                wizard_id.action_search()
             tpl_vals.update({
                 'wizard': wizard_id,
                 'pickings': wizard_id.picking_ids,
@@ -189,6 +191,10 @@ class WebStock(http.Controller):
             additional_action = 'process'
             if picking_id.state == 'draft':
                 self.action_confirm(picking_id.id)
+            #wizard_id.process()
+            #return picking_id.do_transfer()
+        elif additional_action == 'overpick_transfer':
+            return picking_id.do_transfer()
         elif additional_action in ['process', 'process_cancel_backorder']:
             wizard_id = request.env['stock.backorder.confirmation'].create({
                 'pick_id': picking_id.id,

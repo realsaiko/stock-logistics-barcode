@@ -145,10 +145,11 @@ odoo.define('web_stock.barcode', function(require) {
                 }
                 if (barcodeQty !== 0.0) {
                     var newVal = barcodeQty + existingVal;
-                    if (newVal > maxVal) {
+                    /*if (newVal > maxVal) {
                         newVal = maxVal;
                         barcodeQty -= maxVal - existingVal;
-                    } else if (newVal < 0) {
+                    } else */
+                    if (newVal < 0) {
                         barcodeQty = newVal;
                         newVal = 0;
                     } else {

@@ -115,6 +115,7 @@ class WebsiteStockPickingWizard(models.TransientModel):
         #else:
         #    print('nera lots')
         vals = self._process_form_vals(form_values)
+        #print(vals)
         picking_id.write(
             vals
         )
@@ -132,7 +133,7 @@ class WebsiteStockPickingWizard(models.TransientModel):
         for name, value in form_values.iteritems():
             try:
                 op_id, field = name.split('.', 1)
-                _logger.debug('op_id: %s , field: %s', op_id, field)
+                _logger.debug('op_id: %s , field: %s, value: %s', op_id, field, value)
             except ValueError:
                 continue
             if 'pack_lots_ids' in field:
